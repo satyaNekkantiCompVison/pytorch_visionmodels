@@ -39,7 +39,7 @@ class AlbumentationImageDataset(Dataset):
 
 def get_train_loader(BATCH_SIZE =128):
   trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
-                                          download=True )
+                                          download=False )
   train_loader = DataLoader(AlbumentationImageDataset(trainset, train=True), batch_size=BATCH_SIZE,
                                           shuffle=True, num_workers=2)
 
@@ -48,7 +48,7 @@ def get_train_loader(BATCH_SIZE =128):
 
 def get_test_loader(BATCH_SIZE=128):
   testset = torchvision.datasets.CIFAR10(root='./data', train=False,
-                                       download=True)
+                                       download=False)
 
   test_loader = DataLoader(AlbumentationImageDataset(testset, train=False), batch_size=BATCH_SIZE,
                                           shuffle=False, num_workers=1)
