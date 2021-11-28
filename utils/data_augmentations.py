@@ -50,7 +50,7 @@ def get_test_loader(BATCH_SIZE=128):
   testset = torchvision.datasets.CIFAR10(root='./data', train=False,
                                        download=False)
 
-  test_loader = DataLoader(AlbumentationImageDataset(testset, train=False,), batch_size=BATCH_SIZE,
+  test_loader = DataLoader(AlbumentationImageDataset(testset, train=False,Aug=None), batch_size=BATCH_SIZE,
                                           shuffle=False, num_workers=1)
 
   return test_loader
