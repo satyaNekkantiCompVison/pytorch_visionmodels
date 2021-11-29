@@ -71,7 +71,7 @@ class CustomResNetModule(nn.Module):
         )
 
         # ResBlock2 ( (Conv-BN-ReLU-Conv-BN-ReLU))(X) [512k]
-        self.ResBlock2 = block(512, 512, norm_type=norm_type)
+        self.ResBlock2 = block(512, 512)
 
         # MaxPooling with Kernel Size 4
         self.pooling = nn.MaxPool2d(4, 4)
@@ -83,7 +83,7 @@ class CustomResNetModule(nn.Module):
         """
         Forward method.
         """
-        X = self.prep(x)
+        X = self.prepLayer(x)
         X = self.Conv1Layer(X)
         R1 = self.ResBlock1(X)
         X = X + R1
