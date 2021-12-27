@@ -1,4 +1,4 @@
-    import albumentations as A
+import albumentations as A
 from albumentations.pytorch import ToTensorV2
 import numpy as np
 import torch
@@ -59,7 +59,7 @@ def get_test_loader(BATCH_SIZE=128):
   testset = torchvision.datasets.CIFAR10(root='./data', train=False,
                                        download=False)
 
-  test_loader = DataLoader(AlbumentationImageDataset(testset, train=False,Aug=None,mean=mean=[0.49139968, 0.48215841, 0.44653091],std=[0.24703223, 0.24348513, 0.26158784]), batch_size=BATCH_SIZE,
+  test_loader = DataLoader(AlbumentationImageDataset(testset, train=False,Aug=None,mean=[0.49139968, 0.48215841, 0.44653091],std=[0.24703223, 0.24348513, 0.26158784]), batch_size=BATCH_SIZE,
                                           shuffle=False, num_workers=1)
 
   return test_loader
@@ -184,7 +184,7 @@ def get_train_loader_tinyImageNet(BATCH_SIZE =128,AugTransforms=None):
 
 
 def get_test_loader_tinyImageNet(BATCH_SIZE=128):
-  testset = TinyImageNet(root='./data', test=True, download=True)
+  testset = TinyImageNet(root='./data', train=False, download=True)
 
   test_loader = DataLoader(AlbumentationImageDataset(testset, train=False,Aug=None,mean=[0.4802, 0.4481, 0.3975],std=[0.2302, 0.2265, 0.2262]), batch_size=BATCH_SIZE,
                                           shuffle=False, num_workers=1)
