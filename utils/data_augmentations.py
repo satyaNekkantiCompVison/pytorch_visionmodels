@@ -173,20 +173,65 @@ class TinyImageNet(Dataset): # Used the Idea from https://github.com/sonugiri104
     def __len__(self):
         return len(self.indices)
 
+def apply_train_transforms_tiny_imagenet(mean, std):
+    """
+    Image augmentations for train and test set for Tiny ImageNet.
+    """
+    train_transforms = A.Compose(
+        [
+            # RandomCrop with Padding
+            A.Sequential(
+                [
+                    A.PadIfNeeded(min_height=72, min_width=72, always_apply=True),
+                    A.RandomCrop(width=64, height=64, p=1),
+                ],
+                p=1,
+            ),
+            # Horizontal Flipping
+            A.HorizontalFlip(p=0.5),
+            # Rotate +- 5 degrees
+            A.Rotate(limit=5),
+            # Cutout
+            A.CoarseDropout(
+                max_holes=2,
+                max_height=32,
+                max_width=32,
+                min_holes=1,
+                min_height=32,
+                min_width=32,
+                fill_value=tuple((x * 255.0 for x in mean)),
+                p=0.8,
+            ),
+            A.Normalize(mean=mean, std=std, always_apply=True),
+            ToTensorV2(),
+        ]
+    )
 
+    return lambda img: train_transforms(image=np.array(img))["image"]
+
+def apply_test_transforms_tiny_imagenet(mean, std):
+    """
+    Image augmentations for train and test set for Tiny ImageNet.
+    """
+
+    test_transforms = A.Compose(
+        [
+            A.Normalize(mean=mean, std=std, always_apply=True),
+            ToTensorV2(),
+        ]
+    )
+
+    return lambda img: test_transforms(image=np.array(img))["image"]
 
 def get_train_loader_tinyImageNet(BATCH_SIZE =128,AugTransforms=None):
-  trainset = TinyImageNet(root='./data', train=True, download=True)
-  train_loader = DataLoader(AlbumentationImageDataset(trainset, train=True,Aug=AugTransforms,mean=[0.4802, 0.4481, 0.3975],std=[0.2302, 0.2265, 0.2262]),batch_size=BATCH_SIZE,
-                                          shuffle=True, num_workers=2)
-
-  return train_loader
+    train_transforms = apply_train_transforms_tiny_imagenet(mean=[0.4802, 0.4481, 0.3975],std=[0.2302, 0.2265, 0.2262])
+    trainset = TinyImageNet(root='./data', train=True, download=True,transform = train_transforms)
+    train_loader = DataLoader(trainset,batch_size=BATCH_SIZE,shuffle=True, num_workers=2)
+    return train_loader
 
 
 def get_test_loader_tinyImageNet(BATCH_SIZE=128):
-  testset = TinyImageNet(root='./data', train=False, download=True)
-
-  test_loader = DataLoader(AlbumentationImageDataset(testset, train=False,Aug=None,mean=[0.4802, 0.4481, 0.3975],std=[0.2302, 0.2265, 0.2262]), batch_size=BATCH_SIZE,
-                                          shuffle=False, num_workers=1)
-
-  return test_loader
+    test_transforms = apply_test_transforms_tiny_imagenet(mean=[0.4802, 0.4481, 0.3975],std=[0.2302, 0.2265, 0.2262])
+    testset = TinyImageNet(root='./data', train=False, download=True,transform=test_transforms)
+    test_loader = DataLoader(testset, batch_size=BATCH_SIZE,shuffle=False, num_workers=1)
+    return test_loader
